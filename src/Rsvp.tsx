@@ -9,9 +9,11 @@ import {
 export default function Rsvp({
     token,
     onFechar,
+    onConfirmado,
 }: {
     token: string;
     onFechar: () => void;
+    onConfirmado: () => void;
 }) {
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(false);
@@ -65,6 +67,7 @@ export default function Rsvp({
         try {
             await confirmarPresencas(confirmacoes);
             setEnviado(true);
+            onConfirmado();
         } catch {
             setErro(true);
         } finally {

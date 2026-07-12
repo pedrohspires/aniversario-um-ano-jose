@@ -1,27 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FaMapMarkerAlt, FaWhatsapp } from "react-icons/fa";
+import { FaGift, FaMapMarkerAlt, FaWhatsapp } from "react-icons/fa";
 import Rsvp from "./Rsvp";
+import Presentes from "./Presentes";
+import { buscarConvitePorToken } from "./lib/pessoas";
 
 export default function App() {
   const tokenDaUrl = new URLSearchParams(window.location.search).get("token");
-  const [tokenAberto, setTokenAberto] = useState(tokenDaUrl);
+
+  const [jaConfirmado, setJaConfirmado] = useState(false);
+  const [tokenValido, setTokenValido] = useState(false);
+  const [rsvpAberto, setRsvpAberto] = useState(false);
+  const [presentesAberto, setPresentesAberto] = useState(false);
+
+  useEffect(() => {
+    if (!tokenDaUrl) return;
+
+    (async () => {
+      const convite = await buscarConvitePorToken(tokenDaUrl);
+      if (!convite) return;
+
+      setTokenValido(true);
+      setJaConfirmado(convite.titular.confirmado !== null);
+    })();
+  }, [tokenDaUrl]);
 
   const abrirLocal = () => {
     window.open(
       "https://maps.app.goo.gl/HDVFE1CTMshLkwgc6",
       "_blank"
     );
-  };
-
-  const confirmarPresenca = () => {
-    if (tokenDaUrl) {
-      setTokenAberto(tokenDaUrl);
-    } else {
-      alert(
-        "Use o link de confirmação enviado para você no WhatsApp para marcar sua presença."
-      );
-    }
   };
 
   return (
@@ -70,12 +78,22 @@ export default function App() {
             Ver Local
           </button>
 
+          {tokenValido && !jaConfirmado && (
+            <button
+              onClick={() => setRsvpAberto(true)}
+              className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-6 py-4 text-lg font-bold text-white shadow-xl transition hover:scale-105"
+            >
+              <FaWhatsapp />
+              Confirmar Presença
+            </button>
+          )}
+
           <button
-            onClick={confirmarPresenca}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-6 py-4 text-lg font-bold text-white shadow-xl transition hover:scale-105"
+            onClick={() => setPresentesAberto(true)}
+            className="flex items-center justify-center gap-2 rounded-2xl bg-pink-500 px-6 py-4 text-lg font-bold text-white shadow-xl transition hover:scale-105"
           >
-            <FaWhatsapp />
-            Confirmar Presença
+            <FaGift />
+            Sugestão de Presentes
           </button>
         </div>
 
@@ -85,8 +103,16 @@ export default function App() {
         </div>
       </div>
 
-      {tokenAberto && (
-        <Rsvp token={tokenAberto} onFechar={() => setTokenAberto(null)} />
+      {rsvpAberto && tokenDaUrl && (
+        <Rsvp
+          token={tokenDaUrl}
+          onFechar={() => setRsvpAberto(false)}
+          onConfirmado={() => setJaConfirmado(true)}
+        />
+      )}
+
+      {presentesAberto && (
+        <Presentes onFechar={() => setPresentesAberto(false)} />
       )}
     </div>
   );
