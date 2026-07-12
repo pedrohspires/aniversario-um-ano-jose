@@ -1,13 +1,11 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaMapMarkerAlt, FaWhatsapp } from "react-icons/fa";
 import Rsvp from "./Rsvp";
 
 export default function App() {
-  const token = new URLSearchParams(window.location.search).get("token");
-
-  if (token) {
-    return <Rsvp token={token} />;
-  }
+  const tokenDaUrl = new URLSearchParams(window.location.search).get("token");
+  const [tokenAberto, setTokenAberto] = useState(tokenDaUrl);
 
   const abrirLocal = () => {
     window.open(
@@ -17,9 +15,13 @@ export default function App() {
   };
 
   const confirmarPresenca = () => {
-    alert(
-      "Use o link de confirmação enviado para você no WhatsApp para marcar sua presença."
-    );
+    if (tokenDaUrl) {
+      setTokenAberto(tokenDaUrl);
+    } else {
+      alert(
+        "Use o link de confirmação enviado para você no WhatsApp para marcar sua presença."
+      );
+    }
   };
 
   return (
@@ -82,6 +84,10 @@ export default function App() {
           <p>📍 Av.principal do conviver com  Rua Francisco Enéas rocha, Nº 47</p>
         </div>
       </div>
+
+      {tokenAberto && (
+        <Rsvp token={tokenAberto} onFechar={() => setTokenAberto(null)} />
+      )}
     </div>
   );
 }
