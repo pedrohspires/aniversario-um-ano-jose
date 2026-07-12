@@ -1,18 +1,24 @@
 import { motion } from "framer-motion";
 import { FaMapMarkerAlt, FaWhatsapp } from "react-icons/fa";
+import Rsvp from "./Rsvp";
 
 export default function App() {
-  const confirmarPresenca = () => {
-    window.open(
-      "https://wa.me/5588999999999?text=Confirmo%20presença%20na%20festinha!",
-      "_blank"
-    );
-  };
+  const token = new URLSearchParams(window.location.search).get("token");
+
+  if (token) {
+    return <Rsvp token={token} />;
+  }
 
   const abrirLocal = () => {
     window.open(
       "https://maps.app.goo.gl/HDVFE1CTMshLkwgc6",
       "_blank"
+    );
+  };
+
+  const confirmarPresenca = () => {
+    alert(
+      "Use o link de confirmação enviado para você no WhatsApp para marcar sua presença."
     );
   };
 
