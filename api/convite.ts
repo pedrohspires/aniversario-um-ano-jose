@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { db } from "./_db";
-import { rowToPessoa } from "./_pessoas";
+import { db } from "./_db.js";
+import { rowToPessoa } from "./_pessoas.js";
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
     if (req.method !== "GET") {

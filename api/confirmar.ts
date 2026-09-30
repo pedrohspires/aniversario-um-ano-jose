@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { db } from "./_db";
+import { db } from "./_db.js";
 
 type Confirmacao = { id: string; confirmado: boolean };
 
