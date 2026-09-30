@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { FaGift, FaMapMarkerAlt, FaWhatsapp } from "react-icons/fa";
+import { FaCheck, FaGift, FaMapMarkerAlt, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 import Rsvp from "./Rsvp";
 import Presentes from "./Presentes";
 import { buscarConvitePorToken } from "./lib/pessoas";
@@ -12,6 +12,8 @@ export default function App() {
   const [tokenValido, setTokenValido] = useState(false);
   const [rsvpAberto, setRsvpAberto] = useState(false);
   const [presentesAberto, setPresentesAberto] = useState(false);
+  const [somAtivo, setSomAtivo] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (!tokenDaUrl) return;
@@ -32,10 +34,17 @@ export default function App() {
     );
   };
 
+  const alternarSom = () => {
+    if (!videoRef.current) return;
+    videoRef.current.muted = somAtivo;
+    setSomAtivo(!somAtivo);
+  };
+
   return (
     <div className="relative h-screen w-full overflow-hidden">
       {/* Vídeo de fundo */}
       <video
+        ref={videoRef}
         autoPlay
         muted
         loop
@@ -47,6 +56,14 @@ export default function App() {
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/50" />
+
+      <button
+        onClick={alternarSom}
+        className="absolute right-4 top-4 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 text-white shadow-lg transition hover:scale-110"
+        aria-label={somAtivo ? "Desativar som" : "Ativar som"}
+      >
+        {somAtivo ? <FaVolumeUp /> : <FaVolumeMute />}
+      </button>
 
       {/* Conteúdo */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-white">
@@ -83,7 +100,7 @@ export default function App() {
               onClick={() => setRsvpAberto(true)}
               className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-6 py-4 text-lg font-bold text-white shadow-xl transition hover:scale-105"
             >
-              <FaWhatsapp />
+              <FaCheck />
               Confirmar Presença
             </button>
           )}

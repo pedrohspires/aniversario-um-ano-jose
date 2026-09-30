@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaCopy, FaGift, FaShoePrints, FaTimes, FaTshirt } from "react-icons/fa";
+import { FaCopy, FaGift, FaPuzzlePiece, FaShoePrints, FaTimes, FaTshirt } from "react-icons/fa";
 
 const PIX_CHAVE = "aniversario.josepedro@pix.com";
 
@@ -37,7 +37,7 @@ export default function Presentes({ onFechar }: { onFechar: () => void }) {
                         <FaShoePrints className="mt-1 shrink-0 text-yellow-400" />
                         <div>
                             <p className="font-semibold">Calçado</p>
-                            <p className="opacity-80">Tamanho 16</p>
+                            <p className="opacity-80">A partir do número 20</p>
                         </div>
                     </div>
 
@@ -45,7 +45,14 @@ export default function Presentes({ onFechar }: { onFechar: () => void }) {
                         <FaTshirt className="mt-1 shrink-0 text-yellow-400" />
                         <div>
                             <p className="font-semibold">Roupa</p>
-                            <p className="opacity-80">Tamanho 2 anos</p>
+                            <p className="opacity-80">Tamanho 4 anos</p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 rounded-xl bg-white/10 p-4">
+                        <FaPuzzlePiece className="mt-1 shrink-0 text-yellow-400" />
+                        <div>
+                            <p className="font-semibold">Brinquedos</p>
                         </div>
                     </div>
 

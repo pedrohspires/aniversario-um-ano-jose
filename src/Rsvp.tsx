@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaCheckCircle, FaTimes } from "react-icons/fa";
+import { FaCheckCircle, FaCheckSquare, FaTimes, FaWhatsapp } from "react-icons/fa";
 import {
     buscarConvitePorToken,
     confirmarPresencas,
@@ -65,7 +65,7 @@ export default function Rsvp({
         }));
 
         try {
-            await confirmarPresencas(confirmacoes);
+            await confirmarPresencas(token, confirmacoes);
             setEnviado(true);
             onConfirmado();
         } catch {
@@ -133,10 +133,21 @@ export default function Rsvp({
                         <button
                             onClick={enviar}
                             disabled={enviando}
-                            className="w-full rounded-2xl bg-yellow-400 px-6 py-4 text-lg font-bold text-black shadow-xl transition hover:scale-105 disabled:opacity-60"
+                            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-6 py-4 text-lg font-bold text-black shadow-xl transition hover:scale-105 disabled:opacity-60"
                         >
+                            <FaCheckSquare />
                             {enviando ? "Enviando..." : "Confirmar"}
                         </button>
+
+                        <a
+                            href="https://wa.me/558591224393"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-green-500 px-6 py-3 text-base font-bold text-white shadow-xl transition hover:scale-105"
+                        >
+                            <FaWhatsapp />
+                            Tire dúvidas
+                        </a>
                     </>
                 )}
             </div>

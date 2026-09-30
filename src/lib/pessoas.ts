@@ -1,5 +1,3 @@
-import { db } from "./db";
-
 export type Pessoa = {
     id: string;
     nome: string;
@@ -9,47 +7,24 @@ export type Pessoa = {
     confirmado: boolean | null;
 };
 
-function rowToPessoa(row: Record<string, unknown>): Pessoa {
-    return {
-        id: row.id as string,
-        nome: row.nome as string,
-        whatsapp: (row.whatsapp as string | null) ?? null,
-        responsavelId: (row.responsavel_id as string | null) ?? null,
-        token: (row.token as string | null) ?? null,
-        confirmado:
-            row.confirmado === null || row.confirmado === undefined
-                ? null
-                : Boolean(row.confirmado),
-    };
-}
-
 export async function buscarConvitePorToken(token: string) {
-    const result = await db.execute({
-        sql: "SELECT * FROM pessoas WHERE token = ?",
-        args: [token],
-    });
+    const res = await fetch(`/api/convite?token=${encodeURIComponent(token)}`);
 
-    if (result.rows.length === 0) return null;
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error("Falha ao buscar convite");
 
-    const titular = rowToPessoa(result.rows[0]);
-
-    const acompanhantesResult = await db.execute({
-        sql: "SELECT * FROM pessoas WHERE responsavel_id = ? ORDER BY nome",
-        args: [titular.id],
-    });
-
-    const acompanhantes = acompanhantesResult.rows.map(rowToPessoa);
-
-    return { titular, acompanhantes };
+    return (await res.json()) as { titular: Pessoa; acompanhantes: Pessoa[] };
 }
 
 export async function confirmarPresencas(
+    token: string,
     confirmacoes: { id: string; confirmado: boolean }[]
 ) {
-    for (const { id, confirmado } of confirmacoes) {
-        await db.execute({
-            sql: "UPDATE pessoas SET confirmado = ? WHERE id = ?",
-            args: [confirmado ? 1 : 0, id],
-        });
-    }
+    const res = await fetch("/api/confirmar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, confirmacoes }),
+    });
+
+    if (!res.ok) throw new Error("Falha ao confirmar presença");
 }
