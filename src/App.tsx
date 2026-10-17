@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { FaCheck, FaGift, FaMapMarkerAlt, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
-import Rsvp from "./Rsvp";
 import Presentes from "./Presentes";
+import Rsvp from "./Rsvp";
 import { buscarConvitePorToken } from "./lib/pessoas";
 
 export default function App() {
@@ -89,7 +89,7 @@ export default function App() {
         <div className="flex flex-col gap-4 sm:flex-row">
           <button
             onClick={abrirLocal}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-6 py-4 text-lg font-bold text-black shadow-xl transition hover:scale-105"
+            className="flex items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-6 py-4 text-lg font-bold text-black shadow-xl transition hover:scale-105 sm:w-64"
           >
             <FaMapMarkerAlt />
             Ver Local
@@ -98,7 +98,7 @@ export default function App() {
           {tokenValido && !jaConfirmado && (
             <button
               onClick={() => setRsvpAberto(true)}
-              className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-6 py-4 text-lg font-bold text-white shadow-xl transition hover:scale-105"
+              className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-6 py-4 text-lg font-bold text-white shadow-xl transition hover:scale-105 sm:w-64"
             >
               <FaCheck />
               Confirmar Presença
@@ -107,7 +107,7 @@ export default function App() {
 
           <button
             onClick={() => setPresentesAberto(true)}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-pink-500 px-6 py-4 text-lg font-bold text-white shadow-xl transition hover:scale-105"
+            className="flex items-center justify-center gap-2 rounded-2xl bg-pink-500 px-6 py-4 text-lg font-bold text-white shadow-xl transition hover:scale-105 sm:w-64"
           >
             <FaGift />
             Sugestão de Presentes
@@ -115,8 +115,10 @@ export default function App() {
         </div>
 
         <div className="mt-10 text-sm opacity-90">
-          <p>📅 7 de Novembro • 16h</p>
+          <p>📅 7 de Novembro • 17:30</p>
           <p>📍 Av.principal do conviver com  Rua Francisco Enéas rocha, Nº 47</p>
+          <p>🏊 Banho de piscina entre 09 e 15 horas. Traga sua roupa de banho</p>
+          <p>⚠️ Obs: não haverá almoço no horário aberto para banho</p>
         </div>
       </div>
 
