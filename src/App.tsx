@@ -1,16 +1,17 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { FaCheck, FaGift, FaMapMarkerAlt, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
+import { FaGift, FaMapMarkerAlt, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 import Presentes from "./Presentes";
-import Rsvp from "./Rsvp";
 import { buscarConvitePorToken } from "./lib/pessoas";
+
+type Acesso = "carregando" | "liberado" | "encerrado" | "erro";
 
 export default function App() {
   const tokenDaUrl = new URLSearchParams(window.location.search).get("token");
 
-  const [jaConfirmado, setJaConfirmado] = useState(false);
-  const [tokenValido, setTokenValido] = useState(false);
-  const [rsvpAberto, setRsvpAberto] = useState(false);
+  const [acesso, setAcesso] = useState<Acesso>(
+    tokenDaUrl ? "carregando" : "encerrado"
+  );
   const [presentesAberto, setPresentesAberto] = useState(false);
   const [somAtivo, setSomAtivo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -19,11 +20,17 @@ export default function App() {
     if (!tokenDaUrl) return;
 
     (async () => {
-      const convite = await buscarConvitePorToken(tokenDaUrl);
-      if (!convite) return;
-
-      setTokenValido(true);
-      setJaConfirmado(convite.titular.confirmado !== null);
+      try {
+        const convite = await buscarConvitePorToken(tokenDaUrl);
+        const algumConfirmado =
+          convite &&
+          [convite.titular, ...convite.acompanhantes].some(
+            (p) => p.confirmado === true
+          );
+        setAcesso(algumConfirmado ? "liberado" : "encerrado");
+      } catch {
+        setAcesso("erro");
+      }
     })();
   }, [tokenDaUrl]);
 
@@ -39,6 +46,30 @@ export default function App() {
     videoRef.current.muted = somAtivo;
     setSomAtivo(!somAtivo);
   };
+
+  if (acesso !== "liberado") {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-neutral-900 px-6 text-center text-white">
+        {acesso === "carregando" && <p>Carregando...</p>}
+        {acesso === "erro" && (
+          <p className="max-w-md text-lg">
+            Não foi possível carregar o convite. Tente novamente em instantes.
+          </p>
+        )}
+        {acesso === "encerrado" && (
+          <div>
+            <h1 className="mb-3 text-3xl font-extrabold">
+              A confirmação de presença foi encerrada
+            </h1>
+            <p className="max-w-md opacity-80">
+              As informações do aniversário estão disponíveis apenas para quem
+              confirmou presença.
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-screen w-full overflow-hidden">
@@ -82,8 +113,8 @@ export default function App() {
           transition={{ delay: 0.5 }}
           className="mb-8 max-w-md text-lg"
         >
-          Venha comemorar conosco uma tarde cheia de diversão na
-          Fazendinha do Zenon!
+          Venha comemorar conosco um dia cheio de diversão na
+          Fazendinha do José!
         </motion.p>
 
         <div className="flex flex-col gap-4 sm:flex-row">
@@ -94,16 +125,6 @@ export default function App() {
             <FaMapMarkerAlt />
             Ver Local
           </button>
-
-          {tokenValido && !jaConfirmado && (
-            <button
-              onClick={() => setRsvpAberto(true)}
-              className="flex items-center justify-center gap-2 rounded-2xl bg-green-500 px-6 py-4 text-lg font-bold text-white shadow-xl transition hover:scale-105 sm:w-64"
-            >
-              <FaCheck />
-              Confirmar Presença
-            </button>
-          )}
 
           <button
             onClick={() => setPresentesAberto(true)}
@@ -121,14 +142,6 @@ export default function App() {
           <p>⚠️ Obs: não haverá almoço no horário aberto para banho</p>
         </div>
       </div>
-
-      {rsvpAberto && tokenDaUrl && (
-        <Rsvp
-          token={tokenDaUrl}
-          onFechar={() => setRsvpAberto(false)}
-          onConfirmado={() => setJaConfirmado(true)}
-        />
-      )}
 
       {presentesAberto && (
         <Presentes onFechar={() => setPresentesAberto(false)} />
